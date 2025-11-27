@@ -11,7 +11,7 @@
 # 环境配置
 
 ```bash
-conda create -n lmsafety python=3.10
-conda activate lmsafety
+conda create -n llmguard python=3.13
+conda activate llmguard
 pip install -r requirements.txt
 ```
