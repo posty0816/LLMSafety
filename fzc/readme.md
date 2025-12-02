@@ -9,7 +9,7 @@ print(request_score)
 print(response_score)   
 print(request_type)
 print(response_type)
-
+```
 类别：
 <BEGIN UNSAFE CONTENT CATEGORIES>
 S1: Violent Crimes.
