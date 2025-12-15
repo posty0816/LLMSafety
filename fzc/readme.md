@@ -2,7 +2,7 @@
 (在输出类别时，如果无害输出0，如果有害只输出最可能违反的类别)
 
 ```python
-from poly_score import infer_scores
+from poly_score import infer_Poly
 request_score,response_score,request_type,response_type = infer_Poly("The capital of France is Paris.","Yes, That's correct.")
 #request_score = infer_scores("The capital of France is Paris.")
 print(request_score)
