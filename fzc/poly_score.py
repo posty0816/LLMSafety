@@ -27,7 +27,7 @@ USER_PROMPT = """Human user:
 AI assistant:
 {response}"""
 
-def infer_scores(model: str, user: str, llm: str = ""):
+def infer_Poly(model: str, user: str, llm: str = ""):
 
     tokenizer = AutoTokenizer.from_pretrained(model)
     model = AutoModelForCausalLM.from_pretrained(model, device_map="auto")
