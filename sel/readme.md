@@ -13,3 +13,18 @@ print(f"Response safe score: {response_safe_score:.4f}")
 print(f"Prompt categories:   {category_prompt}")  # 输出是一个列表
 print(f"Response categories: {category_response}")
 ```
+
+
+Qwen3Guard有害种类，顺序也是，无害时输出为0，即None，violent就输出1，以此类推
+CATEGORIES = [
+    "None",
+    "Violent",
+    "Non-violent Illegal Acts",
+    "Sexual Content or Sexual Acts",
+    "PII",  # Personally Identifiable Information
+    "Suicide & Self-Harm",
+    "Unethical Acts",
+    "Politically Sensitive Topics",
+    "Copyright Violation",
+    "Jailbreak"
+]
