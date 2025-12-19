@@ -5,6 +5,8 @@ import os, re
 from typing import Optional, Iterable, Set, Tuple
 import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM
+from transformers import logging
+logging.set_verbosity_error()
 
 _DEFAULT_MODEL_DIR = os.environ.get("WILDGUARD_MODEL_DIR", "/home/sxl/models/wildguard")
 
@@ -106,19 +108,21 @@ _tok = _model = _device = None
 def _load(model_dir: str, device="auto", dtype="auto"):
     global _tok, _model, _device
     if _tok is not None: return
-    mdir = model_dir or _DEFAULT_MODEL_DIR
+    # mdir = model_dir or _DEFAULT_MODEL_DIR
+    mdir = model_dir
     if device == "auto":
         device = "cuda" if torch.cuda.is_available() else "cpu"
     torch_dtype = torch.float16 if (dtype=="auto" and device=="cuda") else torch.float32
-    _tok = AutoTokenizer.from_pretrained(mdir, local_files_only=True)
-    if _tok.pad_token is None: _tok.pad_token = _tok.eos_token
+    _tok = AutoTokenizer.from_pretrained(mdir, local_files_only=True, use_fast=False)
+    if _tok.pad_token_id is None:
+        _tok.pad_token = _tok.eos_token
     _model = AutoModelForCausalLM.from_pretrained(
-        mdir, local_files_only=True, torch_dtype=torch_dtype
+        mdir, local_files_only=True, dtype=torch_dtype
     ).to(device).eval()
     _device = device
 
 # ================= 对外接口 =================
-def inference(prompt: str,
+def infer_Wild(prompt: str,
               response: str,
               model_dir: str = None,
               device: str = "auto",
@@ -146,10 +150,11 @@ def inference(prompt: str,
 
     yn = lambda pred, p: "yes" if (pred == 1 or (pred is None and p >= 0.5)) else "no"
 
-    return (
-        yn(pr, p_req),
-        yn(pref, 0.0),
-        yn(presp, p_rsp),
-        float(1.0 - p_req),
-        float(1.0 - p_rsp),
-    )
+    # return (
+    #     yn(pr, p_req),  # harmful prompt, 用户输入是否有害, bool
+    #     yn(pref, 0.0),  # response refusal, 模型是否回复拒绝, bool
+    #     yn(presp, p_rsp),  # harmful response, 模型回复是否有害, bool
+    #     float(1.0 - p_req),  # prompt safe score, 检测prompt为安全的概率，0.0238说明模型判断这个prompt为安全的概率很低
+    #     float(1.0 - p_rsp),  # response safe score, 检测response为安全的概率
+    # )
+    return float(1.0 - p_req), float(1.0 - p_rsp), yn(pr, p_req), yn(presp, p_rsp)
